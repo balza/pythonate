@@ -7,9 +7,10 @@ def andamento(funzione):
 			return 'Positivo'
 		else:
 			return 'Negativo'
-		return calcola_andamento
+	return calcola_andamento
 @andamento
 def scostamento(venduto, budget):
-	return (venduto - budget) * 100 / budget  
+	return (venduto - budget) * 100 / budget
+print scostamento
 risultato = scostamento(2000,1000)
-print(risultato)
+print(risultato)	
