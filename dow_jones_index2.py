@@ -8,5 +8,6 @@ def converti_valori_monetari(stringa):
 colonne_da_convertire = ('open','high','low','close','next_weeks_open','next_weeks_close')
 for colonna in colonne_da_convertire:
     df[colonna] = df[colonna].apply(converti_valori_monetari)
-print(df)
-print(df.describe)
+print(df.head())
+print(df.describe())
+print(df.iloc[5:11])
