@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
+from sklearn import tree
+from sklearn.metrics import roc_curve,roc_auc_score
 
 pd.set_option('display.float_format', lambda x:'{0:.2f}'.format(x))
 df = pd.read_csv("storico_prestiti.csv")
@@ -45,4 +47,19 @@ df.plot.scatter(
 )
 plt.savefig('prestiti4.jpg')
 plt.cla()
-
+X_2 = df_encoded.loc[:,('eta','saldo')]
+y = df_encoded.loc[:, 'estinto']
+clf_dt = tree.DecisionTreeClassifier(max_depth=2)
+clf_dt = clf_dt.fit(X_2, y)
+print(clf_dt)
+clf_dt_5 = tree.DecisionTreeClassifier(max_depth=5)
+clf_dt_5 = clf_dt.fit(X_2, y)
+esito_5_nodi = clf_dt_5.predict(X_2)
+plt.hist(esito_5_nodi)
+plt.savefig('prestiti5.jpg')
+falsi_positivi, veri_positivi, _ = roc_curve(esito_5_nodi, df.estinto)
+plt.plot(falsi_positivi, veri_positivi)
+plt.savefig('prestiti6.jpg')
+plt.cla()
+score = roc_auc_score(esito_5_nodi, df.estinto)
+print(score)
