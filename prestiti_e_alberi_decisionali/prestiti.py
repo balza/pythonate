@@ -4,6 +4,26 @@ from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
 from sklearn import tree
 from sklearn.metrics import roc_curve,roc_auc_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.ensemble import RandomForestClassifier
+
+def cross_validation(dataset, classificatore, k):
+    X = dataset.iloc[:,:-1]  # tutto tranne l'ultima colonna
+    y = dataset.iloc[:,-1]  # solo l'ultima colonna ("estinto")
+    
+    kf = StratifiedKFold(n_splits=k)
+    
+    valori_aree = []
+
+    for train_index, test_index in kf.split(X,y):
+        X_training = X.iloc[train_index]
+        y_training = y.iloc[train_index]
+        classificatore = classificatore.fit(X_training, y_training)
+        previsioni = classificatore.predict_proba(X.iloc[test_index])[:,1]
+        area = roc_auc_score(y.iloc[test_index],previsioni)
+        valori_aree.append(area)
+    
+    return np.mean(valori_aree)
 
 pd.set_option('display.float_format', lambda x:'{0:.2f}'.format(x))
 df = pd.read_csv("storico_prestiti.csv")
@@ -63,3 +83,11 @@ plt.savefig('prestiti6.jpg')
 plt.cla()
 score = roc_auc_score(esito_5_nodi, df.estinto)
 print(score)
+#
+dt = tree.DecisionTreeClassifier(max_depth=5)
+dataset = df_encoded[['eta','saldo','estinto']]
+print(cross_validation(dataset,dt,5))
+#
+rfc = RandomForestClassifier(n_estimators=1000)
+print(cross_validation(df_encoded, rfc, 5))
+
